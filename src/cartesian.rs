@@ -416,6 +416,12 @@ impl<const N: usize> Debug for Vector<N> {
     }
 }
 
+impl<const N: usize> Debug for Cell<N> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Cell[{}]", self.0.iter().join(", "))
+    }
+}
+
 impl<const N: usize> Cell<N> {
     pub fn origin() -> Self {
         Self(from_fn(|_| 0))
@@ -596,12 +602,6 @@ impl<const N: usize> Cartesian<N> for Cell<N> {
     }
 }
 
-impl<const N: usize> Debug for Cell<N> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Cell[{}]", self.0.iter().join(", "))
-    }
-}
-
 pub trait Boundable<const N: usize> {
     fn points(&self) -> impl Iterator<Item = Point<N>>;
 }
@@ -758,6 +758,10 @@ pub trait Absolute<const N: usize>:
             println!("WARNING: line is not straight and does not reach destination")
         }
         result
+    }
+
+    fn vector_to(self, dest: Self) -> Vector<N> {
+        dest - self
     }
 }
 
