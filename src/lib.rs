@@ -1236,7 +1236,7 @@ pub trait DisplayExt: Display {
             .words()
     }
 
-    fn regex_multi(&self, regex: &str) -> Vec<Vec<String>> {
+    fn regex_capture_groups(&self, regex: &str) -> Vec<Vec<String>> {
         #[cached]
         fn compile_regex(regex: String) -> Regex {
             Regex::new(&regex).unwrap()
@@ -1251,6 +1251,19 @@ pub trait DisplayExt: Display {
                     .map(|x| x.unwrap().as_str().to_string())
                     .collect_vec()
             })
+            .collect_vec()
+    }
+
+    fn regex_matches(&self, regex: &str) -> Vec<String> {
+        #[cached]
+        fn compile_regex(regex: String) -> Regex {
+            Regex::new(&regex).unwrap()
+        }
+
+        let regex = compile_regex(regex.to_string());
+        regex
+            .find_iter(&self.to_string())
+            .map(|x| x.as_str().to_string())
             .collect_vec()
     }
 }

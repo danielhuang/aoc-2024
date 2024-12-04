@@ -115,8 +115,8 @@ impl<const N: usize> Point<N> {
         Vector::<N>::adj().map(|x| x + *self)
     }
 
-    pub fn adj_diag(&self) -> [Self; count_adj_diag(N)] {
-        Vector::<N>::adj_diag().map(|x| x + *self)
+    pub fn adj_with_diag(&self) -> [Self; count_adj_diag(N)] {
+        Vector::<N>::adj_with_diag().map(|x| x + *self)
     }
 }
 
@@ -444,7 +444,7 @@ impl<const N: usize> Cell<N> {
     }
 
     pub fn adj_diag(&self) -> [Self; count_adj_diag(N)] {
-        Vector::<N>::adj_diag().map(|x| x + *self)
+        Vector::<N>::adj_with_diag().map(|x| x + *self)
     }
 
     pub fn corners(&self) -> [Point<N>; count_corners(N)] {
@@ -477,7 +477,7 @@ impl<const N: usize> Vector<N> {
         Self::zero() + *self
     }
 
-    pub fn adj_diag() -> [Self; count_adj_diag(N)] {
+    pub fn adj_with_diag() -> [Self; count_adj_diag(N)] {
         let mut result = [Self::default(); count_adj_diag(N)];
 
         let mut i = 0;
