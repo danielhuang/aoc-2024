@@ -150,7 +150,7 @@ pub fn cp(x: impl Display) {
                             "found".green(),
                             elapsed.yellow()
                         );
-                        for (i, x) in m {
+                        for (i, x) in m.into_iter().take(5) {
                             let j = i + x.len();
                             let begin = i.saturating_sub(30);
                             let end = (j + 30).min(page.len());
