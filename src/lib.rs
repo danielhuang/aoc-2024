@@ -285,6 +285,20 @@ pub trait ExtraItertools: IntoIterator + Sized {
     {
         self.ii().fold(Default::default(), |a, b| a + b)
     }
+
+    fn index_of(self, x: &Self::Item) -> Option<usize>
+    where
+        Self::Item: PartialEq,
+    {
+        self.ii().position(|y| x == &y)
+    }
+
+    fn has(self, x: &Self::Item) -> bool
+    where
+        Self::Item: PartialEq,
+    {
+        self.index_of(x).is_some()
+    }
 }
 
 impl<T: IntoIterator + Sized> ExtraItertools for T {}
