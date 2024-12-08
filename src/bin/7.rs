@@ -1,20 +1,36 @@
 use aoc_2024::*;
 
-fn concat(a: Z, b: Z) -> Z {
-    a * (10).pow(b.ilog10() + 1) + b
+fn unconcat_prefix(total: Z, suffix: Z) -> Option<Z> {
+    let suffix_digits = suffix.ilog10() + 1;
+    let remaining_digits = total / (10).pow(suffix_digits);
+    let expected_suffix = total % (10).pow(suffix_digits);
+    if suffix == expected_suffix {
+        Some(remaining_digits)
+    } else {
+        None
+    }
 }
 
-fn is_possible(goal: Z, start: Z, rest: &[i128], part2: bool) -> bool {
+fn is_possible(goal: Z, base: Z, rest: &[Z], part2: bool) -> bool {
     if rest.is_empty() {
-        goal == start
+        goal == base
     } else {
-        if start > goal {
-            return false;
-        }
-
-        (part2 && is_possible(goal, concat(start, rest[0]), &rest[1..], part2))
-            || is_possible(goal, start * rest[0], &rest[1..], part2)
-            || is_possible(goal, start + rest[0], &rest[1..], part2)
+        (part2
+            && unconcat_prefix(goal, rest[rest.len() - 1])
+                .is_some_and(|x| is_possible(x, base, &rest[..rest.len() - 1], part2)))
+            || (goal % rest[rest.len() - 1] == 0
+                && is_possible(
+                    goal / rest[rest.len() - 1],
+                    base,
+                    &rest[..rest.len() - 1],
+                    part2,
+                ))
+            || is_possible(
+                goal - rest[rest.len() - 1],
+                base,
+                &rest[..rest.len() - 1],
+                part2,
+            )
     }
 }
 
