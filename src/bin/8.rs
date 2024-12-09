@@ -12,10 +12,10 @@ fn main() {
     for part2 in [false, true] {
         let mut antinodes = vec![];
 
-        for letter in frequencies.cii() {
+        for &letter in frequencies.iter() {
             let places = grid.findv(letter);
-            for x in places.cii() {
-                for y in places.cii() {
+            for &x in places.iter() {
+                for &y in places.iter() {
                     if x != y {
                         if part2 {
                             antinodes.push(y);

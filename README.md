@@ -4,10 +4,11 @@ Sample inputs from each day are provided. To run with actual inputs, set the `AO
 
 ## Current placement
 
-You have 269 points.
+You have 271 points.
 
 | Day | Part 1   | Rank | Score | Part 2   | Rank | Score |
 |-----|----------|------|-------|----------|------|-------|
+| 9   | 00:05:50 | 99   | 2     | 00:15:25 | 118  | 0     |
 | 8   | 00:03:44 | 88   | 13    | 00:04:29 | 24   | 77    |
 | 7   | 00:02:50 | 162  | 0     | 00:06:46 | 319  | 0     |
 | 6   | 00:02:19 | 84   | 17    | 00:05:22 | 36   | 65    |
