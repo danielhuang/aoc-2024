@@ -259,6 +259,10 @@ pub trait Cartesian<const N: usize>:
         self.inner().into_iter().map(|x| x.abs()).max().unwrap()
     }
 
+    fn dist_sq(&self) -> Z {
+        self.inner().into_iter().map(|x| x * x).sum()
+    }
+
     fn point(&self) -> Point<N> {
         Point(self.inner())
     }
