@@ -1,5 +1,11 @@
 use aoc_2024::*;
 
+fn split(x: Z) -> (Z, Z) {
+    let digits = x.ilog10() + 1;
+    let d = (10).pow(digits / 2);
+    (x / d, x % d)
+}
+
 fn main() {
     let input = load_input();
 
@@ -11,11 +17,8 @@ fn main() {
             for (stone, count) in stones {
                 if stone == 0 {
                     new_stones[1] += count;
-                } else if stone.to_string().len() % 2 == 0 {
-                    let stone = stone.to_string();
-                    let half_len = stone.len() / 2;
-                    let left = (&stone[..half_len]).int();
-                    let right = (&stone[half_len..]).int();
+                } else if stone.ilog10() % 2 == 1 {
+                    let (left, right) = split(stone);
                     new_stones[left] += count;
                     new_stones[right] += count;
                 } else {

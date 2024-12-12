@@ -118,6 +118,22 @@ impl<const N: usize> Point<N> {
     pub fn adj_with_diag(&self) -> [Self; count_adj_diag(N)] {
         Vector::<N>::adj_with_diag().map(|x| x + *self)
     }
+
+    pub fn corner_of(&self) -> [Cell<N>; (2usize).pow(N as u32)] {
+        from_fn(|i| {
+            let mut cell = self.cell();
+            for n in 0..N {
+                if i & (1 << n) != 0 {
+                    cell.0[n] -= 1;
+                }
+            }
+            cell
+        })
+    }
+
+    pub fn corner_minmax_of(&self) -> [Cell<N>; 2] {
+        [self.cell(), self.cell() + Vector::new(from_fn(|_| -1))]
+    }
 }
 
 impl<const N: usize> Default for Point<N> {

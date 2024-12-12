@@ -43,14 +43,14 @@ fn main() {
             .unique()
             .map(|x| {
                 let mut count = 0;
-                for c in group.cii() {
-                    if c.corners().contains(&x) {
+                for c in x.corner_of() {
+                    if group.contains(&c) {
                         count += 1;
                     }
                 }
                 let mut count2 = 0;
-                for c in group.cii() {
-                    if c.corners_minmax().contains(&x) {
+                for c in x.corner_minmax_of() {
+                    if group.contains(&c) {
                         count2 += 1;
                     }
                 }
