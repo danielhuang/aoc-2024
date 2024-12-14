@@ -4,10 +4,11 @@ Sample inputs from each day are provided. To run with actual inputs, set the `AO
 
 ## Current placement
 
-You have 397 points.
+You have 476 points.
 
 | Day                                           | Part 1   | Rank | Score    | Part 2   | Rank | Score    |
 |-----------------------------------------------|----------|------|----------|----------|------|----------|
+| [14](https://adventofcode.com/2024/day/14)    | 00:04:15 | 134  | 0        | 00:09:38 | 22   | **79**   |
 | [13](https://adventofcode.com/2024/day/13)    | 00:04:12 | 135  | 0        | 00:17:24 | 312  | 0        |
 | [12](https://adventofcode.com/2024/day/12)    | 00:04:14 | 223  | 0        | 00:13:53 | 41   | **60**   |
 | [11](https://adventofcode.com/2024/day/11)    | 00:02:37 | 182  | 0        | 00:04:04 | 35   | **66**   |
