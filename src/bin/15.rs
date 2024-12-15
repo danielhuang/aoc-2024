@@ -40,6 +40,7 @@ fn main() {
             if grid[new_pos] == '#' {
                 continue;
             }
+
             if grid[new_pos] == '[' || grid[new_pos] == ']' || grid[new_pos] == 'O' {
                 let to_move = bfs_reach([new_pos], |prev| {
                     let mut results = vec![];
@@ -63,19 +64,25 @@ fn main() {
                     }
                     results
                 })
-                .map(|x| x.0)
-                .cv();
-                let mut grid2 = grid.clone();
-                for to_remove in to_move.cii() {
-                    grid2[to_remove] = '.';
-                    if grid2[to_remove + vel] == '#' {
+                .map(|x| x.0);
+
+                let mut changes1 = vec![];
+                let mut changes2 = vec![];
+
+                for to_remove in to_move {
+                    if grid[to_remove + vel] == '#' {
                         continue 'outer;
                     }
+                    changes1.push((to_remove, '.'));
+                    changes2.push((to_remove + vel, grid[to_remove]));
                 }
-                for to_remove in to_move.cii() {
-                    grid2[to_remove + vel] = grid[to_remove];
+
+                for (pos, c) in changes1 {
+                    grid[pos] = c;
                 }
-                grid = grid2;
+                for (pos, c) in changes2 {
+                    grid[pos] = c;
+                }
             }
 
             pos = new_pos;
