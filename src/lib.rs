@@ -1073,15 +1073,15 @@ impl<K: Eq + Hash + Clone, V: Clone + PartialEq> DefaultHashMapExt<K, V> for Def
 
 #[derive(Default, PartialEq, Eq, Clone, Debug)]
 pub struct DisjointSet<T: Hash + Eq + Clone + Debug> {
-    map: HashMap<T, T>,
-    added: HashSet<T>,
+    map: FxHashMap<T, T>,
+    added: FxHashSet<T>,
 }
 
 impl<T: Hash + Eq + Clone + Debug> DisjointSet<T> {
     pub fn new() -> Self {
         Self {
-            map: HashMap::new(),
-            added: HashSet::new(),
+            map: HashMap::default(),
+            added: HashSet::default(),
         }
     }
 

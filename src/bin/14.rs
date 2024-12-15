@@ -14,7 +14,7 @@ fn main() {
 
     let b = bounds(bots.cii().map(|x| x.0));
 
-    let center = b.bottom_left_cell() + b.top_right_cell().vector() / 2;
+    let center = b.bottom_left_cell() + (b.top_right_point() - b.bottom_left_point()) / 2;
 
     let mut map = DefaultHashMap::new(0);
 
@@ -29,10 +29,18 @@ fn main() {
     cp(map.values().copied().product::<Z>());
 
     for i in 0.. {
-        let bots2 = bots.cii().map(|(pos, vel)| b.wrap(pos + vel * i)).cv();
-        if bounds(bots2.cii()).volume() < b.volume()
-            && bfs_reach([center], |x| x.adj().ii().filter(|y| bots2.contains(y))).count() > 30
-        {
+        let bots2 = bots.cii().map(|(pos, vel)| b.wrap(pos + vel * i)).cset();
+        let mut sets = DisjointSet::using(bots2.cii());
+        for bot in bots2.cii() {
+            for adj in bot.adj().ii().filter(|x| bots2.contains(x)) {
+                sets.join(bot, adj);
+            }
+        }
+        let sets = sets.sets();
+        let mut amounts = sets.ii().map(|x| x.len()).cv();
+        amounts.sort();
+        amounts.reverse();
+        if amounts[0] > 20 && amounts[1] > 20 {
             cp(i);
             break;
         }
