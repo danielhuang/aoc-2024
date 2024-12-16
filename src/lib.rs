@@ -37,6 +37,7 @@ pub use pathfinding::undirected::connected_components::*;
 pub use pathfinding::undirected::kruskal::*;
 pub use pathfinding::utils::*;
 pub use prime_factorization::*;
+pub use rand::{seq::SliceRandom, thread_rng};
 pub use range_ext::intersect::Intersect;
 use regex::Regex;
 use reqwest::blocking::Client;
@@ -1280,6 +1281,16 @@ pub trait DisplayExt: Display {
             .map(|x| x.as_str().to_string())
             .collect_vec()
     }
+
+    fn grid<T: Clone>(
+        &self,
+        f: impl FnMut(char) -> T,
+        default: T,
+    ) -> (DefaultHashMap<Cell2, T>, Cuboid<2>) {
+        let grid = parse_grid(&self.to_string(), f, default);
+        let b = bounds(grid.keys().cloned());
+        (grid, b)
+    }
 }
 
 impl<T: Display> DisplayExt for T {}
@@ -1608,7 +1619,7 @@ pub fn linear_regression(p1: Point<2>, p2: Point<2>, x: Z) -> Q {
 }
 
 // wait a minute...
-pub const INF: Z = Z::MAX << 32;
+pub const INF: Z = Z::MAX >> 32;
 // shhhhh its big enough
 
 pub fn parse_2d(s: &str) -> Vec<Vec<char>> {

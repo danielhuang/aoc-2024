@@ -51,6 +51,7 @@ dependencies = [
  "pathfinding",
  "petgraph",
  "prime_factorization",
+ "rand 0.8.5",
  "range-ext",
  "rayon",
  "regex",

@@ -41,7 +41,7 @@ fn main() {
                 continue;
             }
 
-            if grid[new_pos] == '[' || grid[new_pos] == ']' || grid[new_pos] == 'O' {
+            if grid[new_pos].is_in("[]O".chars()) {
                 let to_move = bfs_reach([new_pos], |prev| {
                     let mut results = vec![];
                     if grid[prev] == '[' {
@@ -80,6 +80,7 @@ fn main() {
                 for (pos, c) in changes1 {
                     grid[pos] = c;
                 }
+
                 for (pos, c) in changes2 {
                     grid[pos] = c;
                 }
