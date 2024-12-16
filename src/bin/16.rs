@@ -1,9 +1,24 @@
 use aoc_2024::*;
 
+fn search(
+    grid: &DefaultHashMap<Cell2, char>,
+    start: impl IntoIterator<Item = (Cell2, Vector2)>,
+) -> impl Iterator<Item = DijkstraReachableItem<(Cell2, Vector2), Z>> {
+    dijkstra_reach(start, |&(pos, vel), _| {
+        let mut results = vec![];
+        results.push(((pos, vel.turn_left()), 1000));
+        results.push(((pos, vel.turn_right()), 1000));
+        if grid[pos + vel] == '.' {
+            results.push(((pos + vel, vel), 1));
+        }
+        results
+    })
+}
+
 fn main() {
     let input = load_input();
 
-    let (mut grid, b) = input.grid(|x| x, '#');
+    let (mut grid, _) = input.grid(|x| x, '#');
 
     let start = grid.findv('S').one();
     let end = grid.findv('E').one();
@@ -11,52 +26,38 @@ fn main() {
     grid[start] = '.';
     grid[end] = '.';
 
-    let mut seen = set([start, end]);
+    let search_end = search(&grid, [(start, v2(1, 0))])
+        .find(|x| x.node.0 == end)
+        .unwrap();
 
-    let mut best_cost = INF;
+    let min_cost = search_end.total_cost;
+    let end = search_end.node;
 
-    loop {
-        for avoid_count in 0.. {
-            dbg!(&avoid_count);
-            for avoid in seen.cii().combinations(avoid_count) {
-                let res = dijkstra(
-                    [(start, v2(1, 0))],
-                    |(pos, vel), _| {
-                        let mut results = vec![];
-                        for new_pos in pos.adj().cii().filter(|y| grid[y] == '.') {
-                            if avoid.contains(&new_pos) {
-                                continue;
-                            }
-                            let diff = new_pos - *pos;
-                            if diff == *vel || diff == -*vel {
-                                results.push(((new_pos, diff), 1));
-                            } else {
-                                results.push(((new_pos, diff), 1001));
-                            }
-                        }
-                        results
-                    },
-                    |x| x.0 == end,
-                );
+    cp(min_cost);
 
-                if let Some(res) = res {
-                    if res.1 < best_cost {
-                        best_cost = res.1;
-                    }
+    let from_start: HashMap<_, _> = search(&grid, [(start, v2(1, 0))])
+        .take_while(|x| x.total_cost <= min_cost)
+        .map(|x| (x.node, x.total_cost))
+        .collect();
 
-                    // dbg!(res.1, best_cost);
+    let from_end = search(&grid, [(end.0, -end.1)])
+        .take_while(|x| x.total_cost <= min_cost)
+        .cv();
 
-                    if best_cost != INF && res.1 == best_cost {
-                        for pos in res.0 {
-                            seen.insert(pos.0);
-                        }
-                    }
+    let mut good_nodes = set([]);
 
-                    dbg!(seen.len());
+    for mut node in from_end {
+        for _ in 0..2 {
+            node.node.1 = -node.node.1;
+            if let Some(cost_from_start) = from_start.get(&node.node) {
+                let total_cost = node.total_cost + cost_from_start;
+                // dbg!(&total_cost);
+                if total_cost <= min_cost {
+                    good_nodes.insert(node.node.0);
                 }
             }
         }
     }
 
-    // cp(res.1);
+    cp(good_nodes.len());
 }
