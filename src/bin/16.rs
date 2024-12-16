@@ -51,7 +51,6 @@ fn main() {
             node.node.1 = -node.node.1;
             if let Some(cost_from_start) = from_start.get(&node.node) {
                 let total_cost = node.total_cost + cost_from_start;
-                dbg!(&total_cost);
                 if total_cost <= min_cost {
                     good_nodes.insert(node.node.0);
                 }
