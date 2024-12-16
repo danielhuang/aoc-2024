@@ -40,20 +40,16 @@ fn main() {
         .map(|x| (x.node, x.total_cost))
         .collect();
 
-    let from_end = search(&grid, [(end.0, -end.1)])
-        .take_while(|x| x.total_cost <= min_cost)
-        .cv();
+    let from_end = search(&grid, [(end.0, -end.1)]).take_while(|x| x.total_cost <= min_cost);
 
     let mut good_nodes = set([]);
 
     for mut node in from_end {
-        for _ in 0..2 {
-            node.node.1 = -node.node.1;
-            if let Some(cost_from_start) = from_start.get(&node.node) {
-                let total_cost = node.total_cost + cost_from_start;
-                if total_cost <= min_cost {
-                    good_nodes.insert(node.node.0);
-                }
+        node.node.1 = -node.node.1;
+        if let Some(cost_from_start) = from_start.get(&node.node) {
+            let total_cost = node.total_cost + cost_from_start;
+            if total_cost <= min_cost {
+                good_nodes.insert(node.node.0);
             }
         }
     }
