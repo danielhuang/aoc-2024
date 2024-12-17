@@ -121,10 +121,10 @@ pub fn load_input() -> String {
 }
 
 pub fn cp(x: impl Display) {
-    let x = x.to_string();
-
     let elapsed = START_TS.lock().unwrap().unwrap().elapsed();
     let elapsed = format!("{:?}", elapsed);
+
+    let x = x.to_string();
 
     static COPIES: Mutex<usize> = Mutex::new(0);
     let mut copies = COPIES.lock().unwrap();
