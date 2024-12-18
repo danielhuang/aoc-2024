@@ -101,7 +101,7 @@ fn main() {
         BV::from_i64(&ctx, 0, 64),
     ];
 
-    for output in program.cii() {
+    for (i, output) in program.cii().enumerate() {
         for (ins, op) in program.cii().tuples() {
             if ins == 0 {
                 let op = combo_z3(op % 8, &registers, &ctx);
@@ -115,6 +115,11 @@ fn main() {
             } else if ins == 3 {
                 // Assuming this only occurs as the last instruction
                 assert!(op == 0);
+                if i == program.len() - 1 {
+                    opt.assert(&registers[0]._eq(&BV::from_i64(&ctx, 0, 64)));
+                } else {
+                    opt.assert(&!registers[0]._eq(&BV::from_i64(&ctx, 0, 64)));
+                }
             } else if ins == 4 {
                 let b = registers[1].clone();
                 let c = registers[2].clone();
