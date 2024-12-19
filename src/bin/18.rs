@@ -8,7 +8,7 @@ fn search(corrupted: &HashMap<Cell2, usize>, b: Cuboid<2>, limit: usize) -> Opti
         [start],
         |x| {
             x.adj()
-                .cii()
+                .ii()
                 .filter(|&y| b.contains(y) && corrupted.get(&y).is_none_or(|&z| z > limit))
         },
         |x| *x == end,
@@ -46,7 +46,7 @@ fn main() {
         }
     }
 
-    let (&bad_cell, _) = corrupted.iter().find(|&(&x, &i)| i == bad).unwrap();
+    let (&bad_cell, _) = corrupted.iter().find(|&(_, &i)| i == bad).unwrap();
 
     cp(format!("{},{}", bad_cell[0], -bad_cell[1]));
 }
