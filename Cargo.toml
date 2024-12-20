@@ -54,3 +54,4 @@ overflow-checks = true
 inherits = "release"
 debug = true
 overflow-checks = false
+lto = "thin"

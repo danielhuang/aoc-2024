@@ -1,20 +1,44 @@
 use aoc_2024::*;
 
-#[cached]
-fn calc(head: Vec<String>, line: String) -> usize {
-    if line.is_empty() {
+fn strip_prefix<'a>(all: &'a str, prefix: &str) -> Option<&'a str> {
+    if prefix.len() > all.len() {
+        return None;
+    }
+
+    if prefix.is_empty() {
+        return Some(all);
+    }
+
+    for i in 0..prefix.len() {
+        if all.as_bytes()[i] != prefix.as_bytes()[i] {
+            return None;
+        }
+    }
+
+    Some(&all[prefix.len()..])
+}
+
+fn calc<'a>(parts: &[String], line: &'a str, cache: &mut HashMap<&'a str, usize>) -> usize {
+    if let Some(&ans) = cache.get(&line) {
+        return ans;
+    }
+
+    let ans = if line.is_empty() {
         1
     } else {
-        head.cii()
+        parts
+            .iter()
             .map(|prefix| {
-                let mut c = 0;
-                if let Some(rest) = line.strip_prefix(&prefix) {
-                    c += calc(head.to_vec(), rest.tos());
-                }
-                c
+                strip_prefix(line, prefix)
+                    .map(|rest| calc(parts, rest, cache))
+                    .unwrap_or(0)
             })
             .sumi()
-    }
+    };
+
+    cache.insert(line, ans);
+
+    ans
 }
 
 fn main() {
@@ -22,13 +46,15 @@ fn main() {
 
     let [head, body] = input.paras().ca();
 
-    let head = head.alphanumeric_words();
+    let parts = head.alphanumeric_words();
 
     let mut count = 0;
     let mut total = 0;
 
+    let mut cache = HashMap::new();
+
     for line in body.lines() {
-        let x = calc(head.clone(), line.tos());
+        let x = calc(&parts, line, &mut cache);
         if x > 0 {
             count += 1;
         }
