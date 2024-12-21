@@ -317,16 +317,16 @@ pub trait Cartesian2: Cartesian<2> {
         Self::new(x)
     }
 
-    fn diamond(&self, radius: Z) -> Vec<Self> {
-        assert!(radius >= 0);
-        if radius == 0 {
+    fn diamond(&self, manhat_distance: Z) -> Vec<Self> {
+        assert!(manhat_distance >= 0);
+        if manhat_distance == 0 {
             return vec![*self];
         }
-        let mut output = vec![];
+        let mut output = Vec::with_capacity(manhat_distance as usize * 4);
         let mut pos = self.inner();
-        pos[1] -= radius;
+        pos[1] -= manhat_distance;
         for (vel_x, vel_y) in [(1, 1), (-1, 1), (-1, -1), (1, -1)] {
-            for _ in 0..radius {
+            for _ in 0..manhat_distance {
                 output.push(Self::new(pos));
                 pos[0] += vel_x;
                 pos[1] += vel_y;
@@ -335,38 +335,42 @@ pub trait Cartesian2: Cartesian<2> {
         output
     }
 
-    fn filled_diamond(&self, radius: Z) -> Vec<Self> {
-        (0..=radius).flat_map(|r| self.diamond(r)).collect()
+    fn filled_diamond(&self, maximum_manhat_distance: Z) -> Vec<Self> {
+        (0..=maximum_manhat_distance)
+            .flat_map(|r| self.diamond(r))
+            .collect()
     }
 
-    fn square_border(&self, radius: Z) -> Vec<Self> {
-        assert!(radius >= 0);
-        if radius == 0 {
+    fn square_border(&self, manhat_diag_distance: Z) -> Vec<Self> {
+        assert!(manhat_diag_distance >= 0);
+        if manhat_diag_distance == 0 {
             return vec![*self];
         }
         let mut output = vec![];
-        let mut pos = self.down(radius).left(radius);
-        for _ in 0..radius * 2 {
+        let mut pos = self.down(manhat_diag_distance).left(manhat_diag_distance);
+        for _ in 0..manhat_diag_distance * 2 {
             output.push(pos);
             pos = pos.up(1);
         }
-        for _ in 0..radius * 2 {
+        for _ in 0..manhat_diag_distance * 2 {
             output.push(pos);
             pos = pos.right(1);
         }
-        for _ in 0..radius * 2 {
+        for _ in 0..manhat_diag_distance * 2 {
             output.push(pos);
             pos = pos.down(1);
         }
-        for _ in 0..radius * 2 {
+        for _ in 0..manhat_diag_distance * 2 {
             output.push(pos);
             pos = pos.left(1);
         }
         output
     }
 
-    fn filled_square(&self, radius: Z) -> Vec<Self> {
-        (0..=radius).flat_map(|r| self.square_border(r)).collect()
+    fn filled_square(&self, maximum_manhat_diag_distance: Z) -> Vec<Self> {
+        (0..=maximum_manhat_diag_distance)
+            .flat_map(|r| self.square_border(r))
+            .collect()
     }
 
     fn rotate3(&self) -> Self {

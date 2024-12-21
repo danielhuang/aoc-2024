@@ -73,11 +73,13 @@ pub type Q = Ratio<Z>;
 pub mod aoc_util;
 pub mod cartesian;
 pub mod defaultmap;
+pub mod ktree;
 pub mod printer;
 
 pub use crate::aoc_util::*;
 pub use crate::cartesian::*;
 pub use crate::defaultmap::*;
+pub use crate::ktree::*;
 pub use crate::printer::*;
 
 use mimalloc::MiMalloc;
@@ -784,10 +786,13 @@ impl<const N: usize> Cuboid<N> {
         b - a
     }
 
-    pub fn all_corner_points(&self) -> Vec<Point<N>> {
+    pub fn all_corner_points(&self) -> [Point<N>; (2usize).pow(N as _)]
+    where
+        [(); (2usize).pow(N as _)]:,
+    {
         let corner = self.corner_points()[0];
         let vector = self.corner_vector();
-        let mut v = vec![Default::default(); count_corners(N)];
+        let mut v = [Default::default(); (2usize).pow(N as _)];
         for (i, x) in v.iter_mut().enumerate() {
             let mut point = corner;
             for n in 0..N {
@@ -936,7 +941,10 @@ impl<const N: usize> std::ops::Sub<Vector<N>> for Cuboid<N> {
     }
 }
 
-impl<const N: usize> Boundable<N> for Cuboid<N> {
+impl<const N: usize> Boundable<N> for Cuboid<N>
+where
+    [(); (2usize).pow(N as _)]:,
+{
     fn points(&self) -> impl Iterator<Item = Point<N>> {
         self.all_corner_points().into_iter()
     }
