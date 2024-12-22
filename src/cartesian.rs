@@ -39,62 +39,62 @@ pub const fn count_corners(dim: usize) -> usize {
 }
 
 #[must_use]
-pub fn p1(x: Z) -> Point<1> {
+pub const fn p1(x: Z) -> Point<1> {
     Point::new([x])
 }
 
 #[must_use]
-pub fn p2(x: Z, y: Z) -> Point<2> {
+pub const fn p2(x: Z, y: Z) -> Point<2> {
     Point::new([x, y])
 }
 
 #[must_use]
-pub fn p3(x: Z, y: Z, z: Z) -> Point<3> {
+pub const fn p3(x: Z, y: Z, z: Z) -> Point<3> {
     Point::new([x, y, z])
 }
 
 #[must_use]
-pub fn p4(w: Z, x: Z, y: Z, z: Z) -> Point<4> {
+pub const fn p4(w: Z, x: Z, y: Z, z: Z) -> Point<4> {
     Point::new([w, x, y, z])
 }
 
 #[must_use]
-pub fn v1(x: Z) -> Vector<1> {
+pub const fn v1(x: Z) -> Vector<1> {
     Vector::new([x])
 }
 
 #[must_use]
-pub fn v2(x: Z, y: Z) -> Vector<2> {
+pub const fn v2(x: Z, y: Z) -> Vector<2> {
     Vector::new([x, y])
 }
 
 #[must_use]
-pub fn v3(x: Z, y: Z, z: Z) -> Vector<3> {
+pub const fn v3(x: Z, y: Z, z: Z) -> Vector<3> {
     Vector::new([x, y, z])
 }
 
 #[must_use]
-pub fn v4(w: Z, x: Z, y: Z, z: Z) -> Vector<4> {
+pub const fn v4(w: Z, x: Z, y: Z, z: Z) -> Vector<4> {
     Vector::new([w, x, y, z])
 }
 
 #[must_use]
-pub fn c1(x: Z) -> Cell<1> {
+pub const fn c1(x: Z) -> Cell<1> {
     Cell::new([x])
 }
 
 #[must_use]
-pub fn c2(x: Z, y: Z) -> Cell<2> {
+pub const fn c2(x: Z, y: Z) -> Cell<2> {
     Cell::new([x, y])
 }
 
 #[must_use]
-pub fn c3(x: Z, y: Z, z: Z) -> Cell<3> {
+pub const fn c3(x: Z, y: Z, z: Z) -> Cell<3> {
     Cell::new([x, y, z])
 }
 
 #[must_use]
-pub fn c4(w: Z, x: Z, y: Z, z: Z) -> Cell<4> {
+pub const fn c4(w: Z, x: Z, y: Z, z: Z) -> Cell<4> {
     Cell::new([w, x, y, z])
 }
 
@@ -103,7 +103,7 @@ impl<const N: usize> Point<N> {
         Self(from_fn(|_| 0))
     }
 
-    pub fn new(x: [Z; N]) -> Self {
+    pub const fn new(x: [Z; N]) -> Self {
         Self(x)
     }
 
@@ -451,7 +451,7 @@ impl<const N: usize> Cell<N> {
         Self(from_fn(|_| 0))
     }
 
-    pub fn new(x: [Z; N]) -> Self {
+    pub const fn new(x: [Z; N]) -> Self {
         Self(x)
     }
 
@@ -493,7 +493,7 @@ impl<const N: usize> Vector<N> {
         Self(from_fn(|_| 0))
     }
 
-    pub fn new(x: [Z; N]) -> Self {
+    pub const fn new(x: [Z; N]) -> Self {
         Self(x)
     }
 

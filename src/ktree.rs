@@ -194,10 +194,23 @@ where
         }
     }
 
-    pub fn count(&self, filter: SemiCuboid<N>) -> usize {
+    pub fn count(&self, b: Cuboid<N>) -> usize {
         match self {
-            KTree::Leaf(set) => set.iter().filter(|x| filter.contains(**x)).count(),
-            _ => todo!(),
+            KTree::Leaf(set) => set.iter().filter(|x| b.contains(**x)).count(),
+            KTree::Node {
+                children,
+                total_len,
+                bounding_box,
+                ..
+            } => {
+                if b.contains(*bounding_box) {
+                    *total_len
+                } else if b.intersect_cells(*bounding_box) {
+                    children.iter().map(|tree| tree.count(b)).sum()
+                } else {
+                    0
+                }
+            }
         }
     }
 }

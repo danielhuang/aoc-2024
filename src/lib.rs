@@ -1609,6 +1609,14 @@ pub fn derivative<T: std::ops::Sub<Output = T> + Clone>(a: &[T]) -> Vec<T> {
     result
 }
 
+pub fn derivative_excl_first<T: std::ops::Sub<Output = T> + Clone>(a: &[T]) -> Vec<T> {
+    let mut result = vec![];
+    for i in 1..a.len() {
+        result.push(a[i].clone() - a[i - 1].clone());
+    }
+    result
+}
+
 pub fn integral<T: std::ops::Add<Output = T> + Clone>(a: &[T]) -> Vec<T> {
     let mut result = a.to_vec();
     for i in 1..result.len() {

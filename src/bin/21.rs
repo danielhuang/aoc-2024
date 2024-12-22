@@ -1,7 +1,6 @@
 use aoc_2024::*;
 
 fn map1(a: char) -> Cell2 {
-    // dbg!(a);
     match a {
         '0' => c2(1, 0),
         '1' => c2(0, 1),
@@ -14,7 +13,7 @@ fn map1(a: char) -> Cell2 {
         '8' => c2(1, 3),
         '9' => c2(2, 3),
         'A' => c2(2, 0),
-        _ => todo!(),
+        _ => unreachable!(),
     }
 }
 
@@ -25,190 +24,136 @@ fn map2(a: char) -> Cell2 {
         '<' => c2(0, 0),
         '>' => c2(2, 0),
         'A' => c2(2, 1),
-        _ => {
-            dbg!(a);
-            todo!()
-        }
+        _ => unreachable!(),
     }
 }
 
-#[cached]
-fn search2(layers: usize, last_pressed_location: Cell2, to_press: char) -> Z {
-    let map2_reverse: HashMap<_, _> = "<>v^A".chars().map(|x| (map2(x), x)).collect();
+fn is_valid1(x: Cell2) -> bool {
+    matches!(
+        x,
+        Cell([1, 0])
+            | Cell([0, 1])
+            | Cell([1, 1])
+            | Cell([2, 1])
+            | Cell([0, 2])
+            | Cell([1, 2])
+            | Cell([2, 2])
+            | Cell([0, 3])
+            | Cell([1, 3])
+            | Cell([2, 3])
+            | Cell([2, 0])
+    )
+}
 
+fn is_valid2(x: Cell2) -> bool {
+    matches!(
+        x,
+        Cell([1, 1]) | Cell([1, 0]) | Cell([0, 0]) | Cell([2, 0]) | Cell([2, 1])
+    )
+}
+
+fn search(
+    layers: usize,
+    last_pressed_location: Cell2,
+    to_press: char,
+    keypad: bool,
+    cache: &mut FxHashMap<(usize, Cell2, char, bool), Z>,
+) -> Z {
     if layers == 0 {
         1
     } else {
+        if let Some(&ans) = cache.get(&(layers, last_pressed_location, to_press, keypad)) {
+            return ans;
+        }
+
+        let map = |x| {
+            if keypad { map1(x) } else { map2(x) }
+        };
+
+        let is_valid = |x| {
+            if keypad { is_valid1(x) } else { is_valid2(x) }
+        };
+
         let path = dijkstra(
             [(last_pressed_location, 'A', false)],
             |&(prev, finger, done), _| {
                 if done {
                     return vec![(
                         (map2('A'), 'A', true),
-                        search2(layers - 1, map2(finger), 'A'),
+                        search(layers - 1, map2(finger), 'A', false, cache),
                     )];
                 }
-                let results = prev
-                    .adj()
+
+                prev.adj()
                     .ii()
                     .chain([prev])
-                    .filter(|x| map2_reverse.contains_key(x))
+                    .filter(|x| is_valid(*x))
                     .map(|next| {
                         if next == prev.up(1) {
                             (
-                                (next, '^', next == map2(to_press)),
-                                search2(layers - 1, map2(finger), '^'),
+                                (next, '^', next == map(to_press)),
+                                search(layers - 1, map2(finger), '^', false, cache),
                             )
                         } else if next == prev.down(1) {
                             (
-                                (next, 'v', next == map2(to_press)),
-                                search2(layers - 1, map2(finger), 'v'),
+                                (next, 'v', next == map(to_press)),
+                                search(layers - 1, map2(finger), 'v', false, cache),
                             )
                         } else if next == prev.left(1) {
                             (
-                                (next, '<', next == map2(to_press)),
-                                search2(layers - 1, map2(finger), '<'),
+                                (next, '<', next == map(to_press)),
+                                search(layers - 1, map2(finger), '<', false, cache),
                             )
                         } else if next == prev.right(1) {
                             (
-                                (next, '>', next == map2(to_press)),
-                                search2(layers - 1, map2(finger), '>'),
+                                (next, '>', next == map(to_press)),
+                                search(layers - 1, map2(finger), '>', false, cache),
                             )
                         } else if next == prev {
-                            ((next, finger, next == map2(to_press)), 1)
+                            ((next, finger, next == map(to_press)), 1)
                         } else {
-                            todo!()
+                            unreachable!()
                         }
                     })
-                    .cv();
-                // dbg!(layers, &prev, &results);
-                results
+                    .cv()
             },
             |x| x.1 == 'A' && x.2,
         )
         .unwrap();
-        // dbg!(
-        //     layers,
-        //     map2_reverse[&last_pressed_location],
-        //     to_press,
-        //     &path
-        // );
+
+        cache.insert((layers, last_pressed_location, to_press, keypad), path.1);
         path.1
     }
-}
-
-#[cached]
-fn search1(layers: usize, last_pressed_location: Cell2, to_press: char) -> Z {
-    let map1_reverse: HashMap<_, _> = "0123456789A".chars().map(|x| (map1(x), x)).collect();
-
-    let map2_reverse: HashMap<_, _> = "<>v^A".chars().map(|x| (map2(x), x)).collect();
-
-    let path = dijkstra(
-        [(last_pressed_location, 'A', false)],
-        |&(prev, finger, done), _| {
-            if done {
-                return vec![(
-                    (map2('A'), 'A', true),
-                    search2(layers - 1, map2(finger), 'A'),
-                )];
-            }
-            let results = prev
-                .adj()
-                .ii()
-                .chain([prev])
-                .filter(|x| map1_reverse.contains_key(x))
-                .map(|next| {
-                    if next == prev.up(1) {
-                        (
-                            (next, '^', next == map1(to_press)),
-                            search2(layers - 1, map2(finger), '^'),
-                        )
-                    } else if next == prev.down(1) {
-                        (
-                            (next, 'v', next == map1(to_press)),
-                            search2(layers - 1, map2(finger), 'v'),
-                        )
-                    } else if next == prev.left(1) {
-                        (
-                            (next, '<', next == map1(to_press)),
-                            search2(layers - 1, map2(finger), '<'),
-                        )
-                    } else if next == prev.right(1) {
-                        (
-                            (next, '>', next == map1(to_press)),
-                            search2(layers - 1, map2(finger), '>'),
-                        )
-                    } else if next == prev {
-                        ((next, finger, next == map1(to_press)), 1)
-                    } else {
-                        todo!()
-                    }
-                })
-                .cv();
-            // dbg!(layers, &prev, &results);
-            results
-        },
-        |x| x.1 == 'A' && x.2,
-    )
-    .unwrap();
-    // dbg!(
-    //     layers,
-    //     map2_reverse[&last_pressed_location],
-    //     to_press,
-    //     &path
-    // );
-    path.1
 }
 
 fn main() {
     let input = load_input();
 
-    let mut all = 0;
+    let mut cache = FxHashMap::default();
 
-    // dbg!(&map2_reverse);
+    for layers in [3, 26] {
+        let mut ans = 0;
 
-    let test = "<A";
+        for line in input.lines() {
+            let mut cost = 0;
 
-    dbg!(search2(1, map2('A'), '>'));
-    dbg!(search2(1, map2('>'), 'v'));
-    dbg!(search2(1, map2('v'), '<'));
-    dbg!(search2(1, map2('A'), '<'));
-    dbg!(search2(2, map2('A'), '<'));
+            cost += search(
+                layers,
+                map1('A'),
+                line.chars().next().unwrap(),
+                true,
+                &mut cache,
+            );
 
-    // <
-    // v<<A
+            for (a, b) in line.chars().tuple_windows() {
+                let start = map1(a);
+                cost += search(layers, start, b, true, &mut cache);
+            }
 
-    // v<A<AA^>>A
-    // v<<A
-    // dbg!(search2(3, map2('A'), '<'));
-
-    let mut cost = 0;
-    cost += search2(2, map2('A'), '<');
-    for (a, b) in "<A^A>^^AvvvA".chars().tuple_windows() {
-        let start = map2(a);
-        cost += search2(2, start, b);
-    }
-    dbg!(&cost);
-
-    // todo!();
-
-    for line in input.lines() {
-        let mut cost = 0;
-
-        cost += search1(26, map1('A'), line.chars().next().unwrap());
-
-        for (a, b) in line.chars().tuple_windows() {
-            let start = map1(a);
-            cost += search1(26, start, b);
+            let num = line.ints().one();
+            ans += num * cost;
         }
 
-        dbg!(&cost);
-
-        let num = line.ints().one();
-        // dbg!(&path);
-        all += num * cost;
-        // todo!();
+        cp(ans);
     }
-
-    cp(all);
 }
