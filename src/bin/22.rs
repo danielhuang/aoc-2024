@@ -1,16 +1,14 @@
 use aoc_2024::*;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 fn main() {
     let input = load_input();
 
     let mut total = 0;
 
-    let mut hs = vec![];
+    let mut prices_list = vec![];
 
-    for n in input.ints() {
-        let mut h = vec![n];
-        let mut n = n;
+    for mut n in input.ints() {
+        let mut prices = vec![n];
         for _ in 0..2000 {
             n ^= n * 64;
             n %= 16777216;
@@ -18,27 +16,28 @@ fn main() {
             n %= 16777216;
             n ^= n * 2048;
             n %= 16777216;
-            h.push(n % 10);
+            prices.push(n % 10);
         }
 
-        hs.push(h);
+        prices_list.push(prices);
         total += n;
     }
 
     cp(total);
 
     let mut options = HashSet::new();
-
+    let mut found_in = defaultdict(set([]));
     let mut indexes = vec![];
 
-    for h in hs.cii() {
-        let d = derivative_excl_first(&h);
+    for (j, prices) in prices_list.cii().enumerate() {
+        let price_changes = derivative_excl_first(&prices);
         let mut option_indexes = FxHashMap::default();
 
-        for (i, w) in d.windows(4).ii().enumerate().rev() {
-            options.insert(w.to_vec());
+        for (i, option) in price_changes.windows(4).ii().enumerate().rev() {
+            options.insert(option.to_vec());
             if i > 0 {
-                option_indexes.insert(w.to_vec(), i);
+                option_indexes.insert(option.to_vec(), i);
+                found_in[option.to_vec()].insert(j);
             }
         }
 
@@ -48,14 +47,9 @@ fn main() {
     let ans = options
         .iter()
         .map(|o| {
-            if sometimes() {
-                dbg!(options.len());
-            }
             let mut total = 0;
-            for (j, h) in hs.iter().enumerate() {
-                if let Some(&i) = indexes[j].get(o) {
-                    total += h[i];
-                }
+            for j in found_in[o].cii() {
+                total += prices_list[j][indexes[j][o]];
             }
             total
         })

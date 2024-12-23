@@ -39,6 +39,7 @@ pub use pathfinding::utils::*;
 pub use prime_factorization::*;
 pub use rand::{seq::SliceRandom, thread_rng};
 pub use range_ext::intersect::Intersect;
+pub use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use regex::Regex;
 use reqwest::blocking::Client;
 pub use rustc_hash::{FxHashMap, FxHashSet};
